@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Termiz Flowers & Sweets</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --rose: #C8526B;
+    --rose-light: #F2D4DA;
+    --rose-dark: #8B2D42;
+    --cream: #FDF8F3;
+    --gold: #C9A84C;
+    --gold-light: #F5EED8;
+    --text: #1A1016;
+    --text-muted: #7A6570;
+    --white: #FFFFFF;
+    --shadow: 0 8px 32px rgba(139,45,66,0.12);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--rose-dark) 0%, var(--rose) 60%, #D4687F 100%);
+    padding: 28px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 20px;
+    width: 240px; height: 240px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .header-inner { position: relative; z-index: 1; }
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .logo-icon { font-size: 28px; }
+  .logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--white);
+    margin: -16px 16px 0;
+    border-radius: var(--radius);
+    padding: 6px;
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 10;
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, var(--rose-dark), var(--rose));
+    color: white;
+    box-shadow: 0 4px 16px rgba(200,82,107,0.35);
+  }
+  .tab-icon { font-size: 16px; }
+
+  /* CONTENT */
+  .content { padding: 20px 16px 120px; }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--rose-dark);
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  /* PRODUCT GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(139,45,66,0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+  }
+  .card:active { transform: scale(0.97); }
+
+  .card-emoji {
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    position: relative;
+  }
+  .card-emoji.rose-bg { background: linear-gradient(135deg, #FDEEF1, #F9D6DE); }
+  .card-emoji.gold-bg { background: linear-gradient(135deg, #FDF3E0, #F5E6C0); }
+
+  .card-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--rose);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .card-badge.new { background: var(--gold); }
+
+  .card-body { padding: 12px; }
+  .card-name {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--rose);
+  }
+  .card-price span { font-size: 11px; font-weight: 400; color: var(--text-muted); }
+
+  .add-btn {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    width: 30px; height: 30px;
+    background: var(--rose);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(200,82,107,0.4);
+    transition: transform 0.15s;
+  }
+  .add-btn:active { transform: scale(0.9); }
+
+  /* ORDER FORM */
+  .order-panel { display: none; }
+  .order-panel.active { display: block; }
+
+  .form-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .form-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--rose-dark);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid #EDE0E4;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--rose);
+    background: white;
+  }
+  .field textarea { resize: none; height: 90px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .pay-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pay-option {
+    border: 1.5px solid #EDE0E4;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--cream);
+  }
+  .pay-option.selected {
+    border-color: var(--rose);
+    background: var(--rose-light);
+  }
+  .pay-option .pay-icon { font-size: 22px; margin-bottom: 4px; }
+  .pay-option .pay-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+  .pay-option.selected .pay-label { color: var(--rose-dark); }
+
+  /* SELECTED ITEMS */
+  .selected-items { margin-bottom: 16px; }
+  .selected-item {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(139,45,66,0.06);
+  }
+  .si-emoji { font-size: 28px; }
+  .si-info { flex: 1; }
+  .si-name { font-size: 13px; font-weight: 500; }
+  .si-price { font-size: 12px; color: var(--rose); font-weight: 500; }
+  .si-remove {
+    background: #FEE8EC;
+    border: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    color: var(--rose);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, var(--cream) 80%, transparent);
+    z-index: 100;
+  }
+
+  .cart-preview {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: none;
+  }
+  .cart-preview.visible { display: flex; }
+  .cart-count {
+    background: var(--rose);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500;
+  }
+  .cart-label { flex: 1; font-size: 13px; font-weight: 500; }
+  .cart-total { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--rose); }
+
+  .submit-btn {
+    width: 100%;
+    padding: 17px;
+    background: linear-gradient(135deg, var(--rose-dark) 0%, var(--rose) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(200,82,107,0.4);
+    transition: opacity 0.2s;
+  }
+  .submit-btn:active { opacity: 0.9; }
+  .submit-btn:disabled { background: #C9B4BC; box-shadow: none; }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 40px 30px;
+  }
+  .success-screen.show { display: flex; }
+  .success-icon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    animation: bounce 0.6s ease;
+  }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--rose-dark);
+    margin-bottom: 12px;
+  }
+  .success-text { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .order-number {
+    background: var(--rose-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    margin: 20px 0;
+    font-weight: 500;
+    color: var(--rose-dark);
+    font-size: 14px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: #EDE0E4;
+    margin: 4px 0 20px;
+  }
+
+  /* EMPTY */
+  .empty-cart {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+  }
+  .empty-cart .ei { font-size: 50px; margin-bottom: 12px; }
+  .empty-cart p { font-size: 14px; }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* SHIMMER animation for cards */
+  .card { animation: fadeUp 0.4s ease both; }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+  .card:nth-child(4) { animation-delay: 0.15s; }
+  .card:nth-child(5) { animation-delay: 0.2s; }
+  .card:nth-child(6) { animation-delay: 0.25s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .note-box {
+    background: var(--gold-light);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #7A6530;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-row">
+      <span class="logo-icon">🌸</span>
+      <span class="logo-text">Termiz Flowers & Sweets</span>
+    </div>
+    <div class="header-sub">Gul va shirinlik buyurtmasi • Termiz</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('gul')">
+    <span class="tab-icon">🌹</span> Gullar
+  </button>
+  <button class="tab" onclick="switchTab('tort')">
+    <span class="tab-icon">🎂</span> Tortlar
+  </button>
+  <button class="tab" onclick="switchTab('order')">
+    <span class="tab-icon">🛒</span> Buyurtma
+  </button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Buyurtma qabul qilindi!</div>
+    <div class="order-number" id="orderNumberDisplay"></div>
+    <div class="success-text">
+      Tez orada operator siz bilan bog'lanadi.<br>
+      Yetkazib berish vaqti aniqlanadi.
+    </div>
+  </div>
+
+  <!-- GUL PANEL -->
+  <div id="panel-gul">
+    <div class="section-title">Gullar 🌹</div>
+    <div class="section-sub">Sevimli odamingizni xursand qiling</div>
+    <div class="grid" id="gulGrid"></div>
+  </div>
+
+  <!-- TORT PANEL -->
+  <div id="panel-tort" class="hidden">
+    <div class="section-title">Tortlar & Shirinliklar 🎂</div>
+    <div class="section-sub">Maxsus kunlar uchun maxsus tortlar</div>
+    <div class="grid" id="tortGrid"></div>
+  </div>
+
+  <!-- ORDER PANEL -->
+  <div id="panel-order" class="hidden">
+    <div class="section-title">Buyurtma 🛒</div>
+    <div class="section-sub">Ma'lumotlarni to'ldiring</div>
+
+    <!-- Selected items -->
+    <div id="cartItems"></div>
+
+    <!-- Form -->
+    <div id="orderFormWrap">
+
+      <div class="form-card">
+        <div class="form-card-title">📦 Yetkazib berish</div>
+
+        <div class="field">
+          <label>📅 Yetkazib berish sanasi</label>
+          <input type="date" id="deliveryDate" min="">
+        </div>
+
+        <div class="field">
+          <label>⏰ Yetkazib berish vaqti</label>
+          <select id="deliveryTime">
+            <option value="">— Vaqtni tanlang —</option>
+            <option>09:00 – 11:00</option>
+            <option>11:00 – 13:00</option>
+            <option>13:00 – 15:00</option>
+            <option>15:00 – 17:00</option>
+            <option>17:00 – 19:00</option>
+            <option>19:00 – 21:00</option>
+          </select>
+        </div>
+
+        <div class="note-box">
+          📍 Aniq manzilni kiriting. Yaqin mashhur joy (do'kon, maktab, masjid) ni ham yozing — topishimiz osonlashadi.
+        </div>
+
+        <div class="field">
+          <label>📍 Yetkazib beriladigan manzil</label>
+          <textarea id="deliveryAddress" placeholder="Ko'cha, uy raqami, qavat&#10;Masalan: Navoiy ko'chasi 45-uy, 2-qavat"></textarea>
+        </div>
+
+        <div class="field">
+          <label>🏪 Yaqin mashhur joy (Mo'ljal)</label>
+          <input type="text" id="landmark" placeholder="Masalan: Termiz bozori yonida, Siyob kafesi qarshisida">
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">👤 Kimga yuboriladi?</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Ism</label>
+            <input type="text" id="recipientFirst" placeholder="Ism">
+          </div>
+          <div class="field">
+            <label>Familiya</label>
+            <input type="text" id="recipientLast" placeholder="Familiya">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>📱 Qabul qiluvchining telefoni</label>
+          <input type="tel" id="recipientPhone" placeholder="+998 90 123 45 67">
+        </div>
+
+        <div class="field">
+          <label>💌 Qo'shimcha xabar (ixtiyoriy)</label>
+          <input type="text" id="giftMessage" placeholder="Masalan: Tug'ilgan kuningiz muborak!">
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">💳 To'lov usuli</div>
+        <div class="pay-options">
+          <div class="pay-option selected" onclick="selectPay(this,'naqd')">
+            <div class="pay-icon">💵</div>
+            <div class="pay-label">Naqd pul</div>
+          </div>
+          <div class="pay-option" onclick="selectPay(this,'click')">
+            <div class="pay-icon">📲</div>
+            <div class="pay-label">Click / Payme</div>
+          </div>
+        </div>
+        <input type="hidden" id="payMethod" value="naqd">
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">📞 Sizning raqamingiz</div>
+        <div class="field">
+          <label>Buyurtmachi telefoni</label>
+          <input type="tel" id="senderPhone" placeholder="+998 90 123 45 67">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="cart-preview" id="cartPreview" onclick="switchTab('order')">
+    <div class="cart-count" id="cartCount">0</div>
+    <div class="cart-label">Savatchada mahsulotlar</div>
+    <div class="cart-total" id="cartTotalPreview">0 so'm</div>
+  </div>
+  <button class="submit-btn" id="mainBtn" onclick="handleMainBtn()">
+    Buyurtma berish →
+  </button>
+</div>
+
+<script>
+// === DATA ===
+const PRODUCTS = {
+  gul: [
+    { id:'g1', name:'Qizil atirgullar (11 ta)', emoji:'🌹', price:120000, bg:'rose-bg', badge:'Bestseller' },
+    { id:'g2', name:'Oq atirgullar (7 ta)', emoji:'🤍', price:90000, bg:'rose-bg', badge:null },
+    { id:'g3', name:'Aralash guldasta (21 ta)', emoji:'💐', price:180000, bg:'rose-bg', badge:'Yangi' },
+    { id:'g4', name:'Tulip guldasta (15 ta)', emoji:'🌷', price:100000, bg:'rose-bg', badge:null },
+    { id:'g5', name:'Sariq atirgullar (9 ta)', emoji:'🌼', price:95000, bg:'gold-bg', badge:null },
+    { id:'g6', name:'Premium guldasta (51 ta)', emoji:'🌸', price:450000, bg:'rose-bg', badge:'VIP' },
+  ],
+  tort: [
+    { id:'t1', name:'Tug\'ilgan kun torti (1 kg)', emoji:'🎂', price:85000, bg:'gold-bg', badge:'Popular' },
+    { id:'t2', name:'Shokoladli tort (1.5 kg)', emoji:'🍫', price:120000, bg:'gold-bg', badge:null },
+    { id:'t3', name:'Macaron to\'plami (12 dona)', emoji:'🍬', price:65000, bg:'gold-bg', badge:'Yangi' },
+    { id:'t4', name:'Mevali tort (2 kg)', emoji:'🍓', price:150000, bg:'gold-bg', badge:null },
+    { id:'t5', name:'Cupcake to\'plami (6 ta)', emoji:'🧁', price:55000, bg:'gold-bg', badge:null },
+    { id:'t6', name:'Nikoh torti (3 kg)', emoji:'💍', price:280000, bg:'gold-bg', badge:'Premium' },
+  ]
+};
+
+let cart = [];
+let selectedPay = 'naqd';
+let currentTab = 'gul';
+
+// === INIT ===
+window.addEventListener('DOMContentLoaded', () => {
+  // Telegram WebApp
+  if (window.Telegram?.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    Telegram.WebApp.setHeaderColor('#8B2D42');
+  }
+
+  // Min date = bugun
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('deliveryDate').min = today;
+  document.getElementById('deliveryDate').value = today;
+
+  renderGrid('gul');
+  renderGrid('tort');
+  updateCartUI();
+});
+
+// === RENDER GRID ===
+function renderGrid(type) {
+  const grid = document.getElementById(type + 'Grid');
+  grid.innerHTML = PRODUCTS[type].map(p => `
+    <div class="card" onclick="addToCart('${p.id}','${type}')">
+      <div class="card-emoji ${p.bg}">
+        ${p.emoji}
+        ${p.badge ? `<div class="card-badge ${p.badge==='Yangi'?'new':''}">${p.badge}</div>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">${fmt(p.price)} <span>so'm</span></div>
+      </div>
+      <button class="add-btn" onclick="event.stopPropagation();addToCart('${p.id}','${type}')">+</button>
+    </div>
+  `).join('');
+}
+
+// === CART ===
+function addToCart(id, type) {
+  const product = PRODUCTS[type].find(p => p.id === id);
+  if (!product) return;
+
+  const existing = cart.find(c => c.id === id);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+
+  updateCartUI();
+  showToast(`${product.emoji} Savatchaga qo'shildi!`);
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s, c) => s + c.price * (c.qty||1), 0);
+  const count = cart.reduce((s, c) => s + (c.qty||1), 0);
+
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotalPreview').textContent = fmt(total) + ' so'm';
+
+  const preview = document.getElementById('cartPreview');
+  if (count > 0) preview.classList.add('visible');
+  else preview.classList.remove('visible');
+
+  // Tab badge
+  if (currentTab === 'order') renderCartItems();
+}
+
+function renderCartItems() {
+  const wrap = document.getElementById('cartItems');
+  if (cart.length === 0) {
+    wrap.innerHTML = `<div class="empty-cart"><div class="ei">🛒</div><p>Savatcha bo'sh.<br>Mahsulot tanlang!</p></div>`;
+    return;
+  }
+  const total = cart.reduce((s,c) => s + c.price*(c.qty||1), 0);
+  wrap.innerHTML = cart.map(c => `
+    <div class="selected-item">
+      <div class="si-emoji">${c.emoji}</div>
+      <div class="si-info">
+        <div class="si-name">${c.name}${c.qty>1?' × '+c.qty:''}</div>
+        <div class="si-price">${fmt(c.price*(c.qty||1))} so'm</div>
+      </div>
+      <button class="si-remove" onclick="removeFromCart('${c.id}')">✕</button>
+    </div>
+  `).join('') + `
+    <div class="form-card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span style="font-weight:500">Jami:</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--rose)">${fmt(total)} so'm</span>
+    </div>
+  `;
+}
+
+// === TABS ===
+function switchTab(tab) {
+  currentTab = tab;
+  ['gul','tort','order'].forEach(t => {
+    document.getElementById('panel-' + t)?.classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['gul','tort','order'][i] === tab);
+  });
+
+  const btn = document.getElementById('mainBtn');
+  if (tab === 'order') {
+    renderCartItems();
+    btn.textContent = cart.length > 0 ? 'Buyurtmani tasdiqlash ✓' : 'Mahsulot tanlang →';
+    btn.disabled = cart.length === 0;
+  } else {
+    btn.textContent = 'Buyurtma berish →';
+    btn.disabled = false;
+  }
+}
+
+// === PAY ===
+function selectPay(el, method) {
+  document.querySelectorAll('.pay-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('payMethod').value = method;
+  selectedPay = method;
+}
+
+// === SUBMIT ===
+function handleMainBtn() {
+  if (currentTab !== 'order') {
+    switchTab('order');
+    return;
+  }
+  submitOrder();
+}
+
+function submitOrder() {
+  if (cart.length === 0) { showToast('⚠️ Mahsulot tanlang!'); return; }
+
+  const date = document.getElementById('deliveryDate').value;
+  const time = document.getElementById('deliveryTime').value;
+  const address = document.getElementById('deliveryAddress').value.trim();
+  const landmark = document.getElementById('landmark').value.trim();
+  const firstName = document.getElementById('recipientFirst').value.trim();
+  const lastName = document.getElementById('recipientLast').value.trim();
+  const recipientPhone = document.getElementById('recipientPhone').value.trim();
+  const senderPhone = document.getElementById('senderPhone').value.trim();
+
+  if (!date || !time) { showToast('⚠️ Sana va vaqtni tanlang'); return; }
+  if (!address) { showToast('⚠️ Manzilni kiriting'); return; }
+  if (!firstName || !lastName) { showToast('⚠️ Qabul qiluvchi ismini kiriting'); return; }
+  if (!recipientPhone) { showToast('⚠️ Telefon raqam kiriting'); return; }
+  if (!senderPhone) { showToast('⚠️ Sizning raqamingizni kiriting'); return; }
+
+  const total = cart.reduce((s,c) => s + c.price*(c.qty||1), 0);
+  const orderNum = 'TF-' + Date.now().toString().slice(-6);
+
+  // Telegram ga yuborish
+  const orderData = {
+    orderNumber: orderNum,
+    items: cart.map(c => `${c.emoji} ${c.name}${c.qty>1?' × '+c.qty:''} — ${fmt(c.price*(c.qty||1))} so'm`).join('\n'),
+    total: fmt(total) + ' so\'m',
+    deliveryDate: date,
+    deliveryTime: time,
+    address: address,
+    landmark: landmark || 'Ko\'rsatilmagan',
+    recipientName: firstName + ' ' + lastName,
+    recipientPhone: recipientPhone,
+    senderPhone: senderPhone,
+    payMethod: selectedPay === 'naqd' ? 'Naqd pul' : 'Click / Payme',
+    giftMessage: document.getElementById('giftMessage').value.trim() || '—'
+  };
+
+  if (window.Telegram?.WebApp) {
+    Telegram.WebApp.sendData(JSON.stringify(orderData));
+  }
+
+  // Show success
+  document.querySelector('.content').innerHTML = '';
+  document.querySelector('.bottom-bar').style.display = 'none';
+  document.querySelector('.tabs').style.display = 'none';
+
+  const success = document.createElement('div');
+  success.className = 'success-screen show';
+  success.innerHTML = `
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Buyurtma qabul qilindi!</div>
+    <div class="order-number">Buyurtma №: ${orderNum}</div>
+    <div class="success-text">
+      Tez orada operator siz bilan bog'lanadi.<br><br>
+      📦 Yetkazib berish: <strong>${date} | ${time}</strong><br>
+      📍 ${address}<br>
+      👤 ${firstName} ${lastName} | ${recipientPhone}
+    </div>
+  `;
+  document.querySelector('.content').appendChild(success);
+}
+
+// === HELPERS ===
+function fmt(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+let toastTimer;
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `
+      position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+      background:rgba(26,16,22,0.88);color:white;padding:10px 20px;
+      border-radius:30px;font-size:13px;z-index:999;
+      backdrop-filter:blur(8px);white-space:nowrap;
+      transition:opacity 0.3s;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.style.opacity = '0', 2200);
+}
+</script>
+</body>
+</html>
