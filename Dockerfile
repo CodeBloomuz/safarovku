@@ -1,15 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
 CMD ["python", "bot.py"]
 ```
 
-**Variant B** — Agar `bot/` papka umuman yo'q bo'lsa:
-```
-safarovku/
-├── bot/
-│   └── bot.py
-```
-Shu tuzilmada fayl yarating.
+---
 
-**Variant C** — Railway'da `Procfile` orqali:
-Repoga `Procfile` fayl qo'shing:
+## `requirements.txt` fayli ham bo'lishi kerak:
 ```
-worker: python bot/bot.py
+aiogram==3.7.0
