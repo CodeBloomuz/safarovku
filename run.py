@@ -1,11 +1,12 @@
 """
-ORZUGUL — Ikki bot + API Server birga ishga tushirish
+ORZUGUL — Uch bot + API Server birga ishga tushirish
 """
+
 import asyncio
 import logging
-
 from customer_bot import create_customer_bot
 from shop_bot import create_shop_bot
+from admin_bot import create_admin_bot
 from api import run_api
 from database import db
 
@@ -32,14 +33,15 @@ async def main():
 
     customer_app = create_customer_bot()
     shop_app     = create_shop_bot()
+    admin_app    = create_admin_bot()
 
     logger.info("🚀 ORZUGUL Ekosistema ishga tushmoqda...")
 
-    # Uchta jarayon parallel ishlaydi
     await asyncio.gather(
         run_bot(customer_app, "Mijoz boti (@OrzugulBot)"),
         run_bot(shop_app,     "Do'kon boti (@OrzugulShopBot)"),
-        run_api(),            # API + Mini App server
+        run_bot(admin_app,    "Admin boti (@OrzugulAdminBot)"),
+        run_api(),
     )
 
 
