@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN mkdir -p /app/webapp && cp /app/index.html /app/webapp/index.html
+
 CMD ["python", "run.py"]
