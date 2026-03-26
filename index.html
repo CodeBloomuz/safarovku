@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ORZUGUL</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --pink:   #e91e8c;
+      --rose:   #ff6bb3;
+      --purple: #a855f7;
+      --green:  #22c55e;
+      --gold:   #f59e0b;
+      --text:   #1e1b3a;
+      --sub:    #6b7280;
+      --border: #f0e8f8;
+      --bg:     #fdf4ff;
+    }
+    html, body { height: 100%; overscroll-behavior: none; background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text); }
+    .screen { display: none; min-height: 100vh; padding-bottom: 80px; }
+    .screen.active { display: block; }
+
+    /* ── HEADER ── */
+    .top-header {
+      background: linear-gradient(135deg, #e91e8c, #a855f7, #6366f1);
+      padding: 24px 16px 52px; position: relative; overflow: hidden;
+    }
+    .top-header::before {
+      content:''; position:absolute; top:-30px; right:-30px;
+      width:120px; height:120px; background:rgba(255,255,255,.1); border-radius:50%;
+    }
+    .top-header::after {
+      content:''; position:absolute; bottom:-20px; left:40px;
+      width:80px; height:80px; background:rgba(255,255,255,.07); border-radius:50%;
+    }
+    .header-title { color:#fff; font-size:26px; font-weight:900; letter-spacing:1px; position:relative; z-index:1; }
+    .header-sub   { color:rgba(255,255,255,.82); font-size:13px; margin-top:2px; position:relative; z-index:1; }
+
+    /* ── TABS ── */
+    .tabs-wrap { padding:0 16px; margin-top:-28px; position:relative; z-index:3; }
+    .tabs { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .tab {
+      background:white; border:none; border-radius:16px;
+      padding:14px 8px 12px; cursor:pointer; text-align:center;
+      box-shadow:0 4px 18px rgba(168,85,247,.13); transition:all .2s; position:relative;
+    }
+    .tab.active {
+      background:linear-gradient(135deg, var(--pink), var(--purple));
+      box-shadow:0 6px 22px rgba(233,30,140,.35);
+    }
+    .tab-icon  { font-size:24px; display:block; margin-bottom:4px; }
+    .tab-label { font-size:13px; font-weight:700; color:var(--sub); }
+    .tab.active .tab-label { color:white; }
+    .tab-count {
+      position:absolute; top:8px; right:10px;
+      background:var(--gold); color:white; font-size:10px; font-weight:800;
+      width:18px; height:18px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap { padding:14px 16px 4px; }
+    .search-box {
+      display:flex; align-items:center; gap:10px;
+      background:white; border-radius:14px; padding:10px 14px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+    .search-icon { font-size:16px; color:var(--sub); flex-shrink:0; }
+    .search-box input {
+      border:none; outline:none; font-size:14px; color:var(--text);
+      flex:1; background:transparent;
+    }
+    .search-box input::placeholder { color:var(--sub); }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      padding:12px 16px 6px; font-size:11px; font-weight:700;
+      color:var(--sub); text-transform:uppercase; letter-spacing:1px;
+    }
+
+    /* ── SHOP CARDS ── */
+    .shops-list { padding:0 16px; display:flex; flex-direction:column; gap:10px; }
+    .shop-card {
+      background:white; border-radius:18px; padding:14px;
+      display:flex; align-items:center; gap:12px;
+      box-shadow:0 2px 14px rgba(0,0,0,.06); cursor:pointer;
+      transition:transform .15s; border:1.5px solid transparent;
+    }
+    .shop-card:active { transform:scale(.98); }
+    .shop-avatar {
+      width:56px; height:56px; border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:26px; flex-shrink:0;
+    }
+    .shop-avatar.flower { background:linear-gradient(135deg,#fce4f3,#f8d7fa); }
+    .shop-avatar.sweet  { background:linear-gradient(135deg,#fff3cd,#fde68a); }
+    .shop-meta { flex:1; min-width:0; }
+    .shop-name { font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .shop-addr { font-size:12px; color:var(--sub); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .shop-tags { display:flex; gap:5px; margin-top:6px; flex-wrap:wrap; }
+    .tag { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; }
+    .tag.delivery { background:#dcfce7; color:#16a34a; }
+    .tag.phone    { background:#eff6ff; color:#3b82f6; }
+    .shop-arrow { color:#d1d5db; font-size:18px; flex-shrink:0; }
+
+    /* ── DETAIL ── */
+    .detail-header {
+      background:linear-gradient(135deg, var(--pink), var(--purple));
+      padding:16px;
+    }
+    .back-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,.2); border:none; border-radius:12px;
+      padding:8px 14px; color:white; font-size:14px; font-weight:600;
+      cursor:pointer; margin-bottom:12px;
+    }
+    .detail-name  { font-size:22px; font-weight:900; color:white; }
+    .detail-addr  { font-size:13px; color:rgba(255,255,255,.8); margin-top:4px; }
+    .detail-tags  { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .detail-tag {
+      background:rgba(255,255,255,.2); border-radius:20px;
+      padding:5px 12px; font-size:12px; color:white; font-weight:600;
+    }
+
+    /* ── PRODUCT GRID ── */
+    .product-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:12px 16px; }
+    .product-card {
+      background:white; border-radius:18px; overflow:hidden;
+      box-shadow:0 2px 14px rgba(0,0,0,.07); cursor:pointer; transition:transform .15s;
+    }
+    .product-card:active { transform:scale(.97); }
+    .product-img-wrap {
+      width:100%; aspect-ratio:1; position:relative; overflow:hidden;
+      background:linear-gradient(135deg,#fce4f3,#ede9fe);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .product-img-wrap img {
+      position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+      opacity:0; transition:opacity .3s;
+    }
+    .product-img-wrap img.loaded { opacity:1; }
+    .prod-placeholder { font-size:44px; position:relative; z-index:0; }
+    .product-card-body { padding:10px 10px 12px; }
+    .product-card-name { font-size:13px; font-weight:700; line-height:1.3; }
+    .product-prices { margin-top:6px; }
+    .price-line { display:flex; justify-content:space-between; align-items:center; margin-top:3px; }
+    .price-lbl  { font-size:10px; color:var(--sub); }
+    .price-val  { font-size:12px; font-weight:800; color:var(--pink); }
+    .price-val.faded { color:var(--sub); font-weight:600; }
+    .delivery-dot {
+      display:inline-flex; align-items:center; gap:3px;
+      font-size:10px; color:var(--green); font-weight:600; margin-top:6px;
+    }
+    .delivery-dot::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; }
+
+    /* ── BOTTOM SHEET ── */
+    .overlay {
+      position:fixed; inset:0; z-index:50;
+      background:rgba(0,0,0,.45); opacity:0; pointer-events:none; transition:opacity .28s;
+    }
+    .overlay.show { opacity:1; pointer-events:all; }
+    .sheet {
+      position:fixed; bottom:0; left:0; right:0; z-index:51;
+      background:white; border-radius:24px 24px 0 0;
+      transform:translateY(100%); transition:transform .3s cubic-bezier(.32,.72,0,1);
+      max-height:92vh; overflow-y:auto;
+      padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px);
+    }
+    .sheet.show { transform:translateY(0); }
+    .sheet-drag {
+      width:36px; height:4px; background:#e5e7eb;
+      border-radius:2px; margin:14px auto 0;
+    }
+    .sheet-product-img {
+      width:100%; aspect-ratio:16/9; overflow:hidden;
+      background:linear-gradient(135deg,#fce4f3,#ede9fe);
+      display:flex; align-items:center; justify-content:center;
+      font-size:80px; position:relative;
+    }
+    .sheet-product-img img {
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; opacity:0; transition:opacity .3s;
+    }
+    .sheet-product-img img.loaded { opacity:1; }
+    .sheet-content { padding:16px 16px 0; }
+    .sheet-name { font-size:20px; font-weight:900; }
+    .sheet-shop { font-size:13px; color:var(--sub); margin-top:2px; }
+    .option-title {
+      font-size:12px; font-weight:700; color:var(--sub);
+      text-transform:uppercase; letter-spacing:.8px; margin:16px 0 8px;
+    }
+    .options-row { display:flex; gap:8px; }
+    .opt-btn {
+      flex:1; border:2px solid var(--border); background:white;
+      border-radius:14px; padding:10px 6px; cursor:pointer;
+      text-align:center; transition:all .15s;
+    }
+    .opt-btn.sel { border-color:var(--pink); background:#fdf2f8; }
+    .opt-lbl   { font-size:11px; color:var(--sub); margin-bottom:4px; }
+    .opt-price { font-size:15px; font-weight:800; color:var(--pink); }
+    .qty-row {
+      display:flex; align-items:center; justify-content:center; gap:20px; margin:14px 0;
+    }
+    .qty-btn {
+      width:44px; height:44px; border-radius:50%;
+      border:2px solid var(--pink); background:white;
+      font-size:22px; font-weight:700; color:var(--pink);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all .15s;
+    }
+    .qty-btn:active { background:var(--pink); color:white; }
+    .qty-num { font-size:26px; font-weight:900; min-width:36px; text-align:center; }
+    .total-card {
+      background:linear-gradient(135deg,#fdf2f8,#f5f3ff);
+      border-radius:16px; padding:14px 16px;
+      display:flex; justify-content:space-between; align-items:center;
+      margin:8px 0 14px; border:1.5px solid #fce7f3;
+    }
+    .total-lbl { font-size:13px; color:var(--sub); }
+    .total-sum { font-size:22px; font-weight:900; color:var(--pink); }
+    .order-btn {
+      width:100%;
+      background:linear-gradient(135deg, var(--pink), var(--purple));
+      color:white; border:none; border-radius:16px;
+      padding:15px; font-size:16px; font-weight:800;
+      cursor:pointer; margin-bottom:6px;
+      box-shadow:0 6px 20px rgba(233,30,140,.35); transition:opacity .15s;
+    }
+    .order-btn:active { opacity:.85; }
+
+    /* ── STATE ── */
+    .state-box {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; padding:50px 30px; text-align:center;
+    }
+    .state-emoji { font-size:52px; margin-bottom:14px; }
+    .state-title { font-size:17px; font-weight:700; margin-bottom:6px; }
+    .state-sub   { font-size:14px; color:var(--sub); line-height:1.5; }
+    .spinner {
+      width:32px; height:32px; border:3px solid #f3e8ff;
+      border-top-color:var(--pink); border-radius:50%;
+      animation:spin .7s linear infinite; margin:0 auto 14px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── SUCCESS ── */
+    .success-popup {
+      position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.55);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .3s;
+    }
+    .success-popup.show { opacity:1; pointer-events:all; }
+    .success-card {
+      background:white; border-radius:24px; padding:32px 28px;
+      text-align:center; max-width:300px; width:90%;
+      transform:scale(.85); transition:transform .3s;
+    }
+    .success-popup.show .success-card { transform:scale(1); }
+    .success-icon  { font-size:60px; margin-bottom:14px; }
+    .success-title { font-size:20px; font-weight:900; margin-bottom:8px; }
+    .success-text  { font-size:14px; color:var(--sub); line-height:1.5; }
+  </style>
+</head>
+<body>
+
+<!-- ── SCREEN: SHOPS ──────────────────────────── -->
+<div class="screen active" id="screen-shops">
+  <div class="top-header">
+    <div class="header-title">🌸 ORZUGUL</div>
+    <div class="header-sub">Gullar va shirinliklar yetkazib berish</div>
+  </div>
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active" id="tab-flower" onclick="switchTab('flower')">
+        <span class="tab-icon">🌸</span>
+        <span class="tab-label">Gullar</span>
+        <span class="tab-count" id="cnt-flower" style="display:none"></span>
+      </button>
+      <button class="tab" id="tab-sweet" onclick="switchTab('sweet')">
+        <span class="tab-icon">🍰</span>
+        <span class="tab-label">Shirinliklar</span>
+        <span class="tab-count" id="cnt-sweet" style="display:none"></span>
+      </button>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Do'kon qidirish..." oninput="filterShops()">
+    </div>
+  </div>
+  <div class="section-label" id="shops-label">Yuklanmoqda...</div>
+  <div class="shops-list" id="shops-list">
+    <div class="state-box"><div class="spinner"></div><div class="state-sub">Yuklanmoqda...</div></div>
+  </div>
+</div>
+
+<!-- ── SCREEN: DETAIL ────────────────────────── -->
+<div class="screen" id="screen-detail">
+  <div id="detail-header" class="detail-header"></div>
+  <div class="section-label" id="prods-label">Mahsulotlar</div>
+  <div class="product-grid" id="products-grid"></div>
+</div>
+
+<!-- ── OVERLAY + SHEET ───────────────────────── -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-drag"></div>
+  <div class="sheet-product-img" id="sheet-img-wrap">
+    <span id="sheet-placeholder">🌸</span>
+  </div>
+  <div class="sheet-content" id="sheet-content"></div>
+</div>
+
+<!-- ── SUCCESS POPUP ─────────────────────────── -->
+<div class="success-popup" id="successPopup">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Zakaz yuborildi!</div>
+    <div class="success-text" id="success-text"></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+// ── API manzili — serveringiz URL si ─────────────
+// Localhost uchun: const API_BASE = "http://localhost:8080";
+// Prodakshn uchun: const API_BASE = "https://yourdomain.com";
+const API_BASE = window.location.origin;
+
+// ── Holat ──────────────────────────────────────
+const S = {
+  tab: "flower", shops: {}, shop: null,
+  products: [], product: null, orderType: null, qty: 1
+};
+
+// ── API ──────────────────────────────────────────
+async function get(path) {
+  const r = await fetch(API_BASE + path);
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+// ── Screenlar ────────────────────────────────────
+function show(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-" + name).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+// ── TAB ──────────────────────────────────────────
+async function switchTab(t) {
+  S.tab = t; S.shops = {};
+  document.getElementById("tab-flower").classList.toggle("active", t==="flower");
+  document.getElementById("tab-sweet").classList.toggle("active",  t==="sweet");
+  document.getElementById("searchInput").value = "";
+  await renderShops();
+}
+
+// ── DO'KONLAR ─────────────────────────────────────
+async function renderShops() {
+  const list  = document.getElementById("shops-list");
+  const label = document.getElementById("shops-label");
+  list.innerHTML = `<div class="state-box"><div class="spinner"></div><div class="state-sub">Do'konlar yuklanmoqda...</div></div>`;
+  label.textContent = "Yuklanmoqda...";
+  try {
+    if (!S.shops[S.tab]) S.shops[S.tab] = await get(`/api/shops?type=${S.tab}`);
+    const shops = S.shops[S.tab];
+    // count badge
+    const cnt = document.getElementById("cnt-" + S.tab);
+    if (cnt) { cnt.textContent = shops.length; cnt.style.display = shops.length ? "flex" : "none"; }
+    drawShops(shops, list, label);
+  } catch(e) {
+    list.innerHTML = `<div class="state-box"><div class="state-emoji">😔</div><div class="state-title">Ulanib bo'lmadi</div><div class="state-sub">Server bilan muammo</div></div>`;
+    label.textContent = "Xatolik";
+  }
+}
+
+function filterShops() {
+  const shops = S.shops[S.tab] || [];
+  const list  = document.getElementById("shops-list");
+  const label = document.getElementById("shops-label");
+  drawShops(shops, list, label);
+}
+
+function drawShops(shops, list, label) {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const arr = q ? shops.filter(s => s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)) : shops;
+  label.textContent = arr.length + " ta do'kon topildi";
+  if (!arr.length) {
+    const icon = S.tab==="flower" ? "🌸" : "🍰";
+    list.innerHTML = `<div class="state-box"><div class="state-emoji">${icon}</div><div class="state-title">Do'kon topilmadi</div><div class="state-sub">${q?"Qidiruv bo'yicha natija yo'q":"Hozircha do'kon yo'q"}</div></div>`;
+    return;
+  }
+  list.innerHTML = arr.map(s => `
+    <div class="shop-card ${s.shop_type}" onclick="openShop(${s.id})">
+      <div class="shop-avatar ${s.shop_type}">${s.shop_type==="flower"?"🌸":"🍰"}</div>
+      <div class="shop-meta">
+        <div class="shop-name">${x(s.name)}</div>
+        <div class="shop-addr">📍 ${x(s.address)}</div>
+        <div class="shop-tags">
+          ${s.has_delivery?'<span class="tag delivery">🚚 Yetkazib berish</span>':""}
+          <span class="tag phone">📞 ${x(s.phone)}</span>
+        </div>
+      </div>
+      <span class="shop-arrow">›</span>
+    </div>`).join("");
+}
+
+// ── DO'KON DETAIL ─────────────────────────────────
+async function openShop(id) {
+  const shops = S.shops[S.tab] || [];
+  S.shop = shops.find(s => s.id === id);
+  if (!S.shop) return;
+  show("detail");
+
+  // Header
+  document.getElementById("detail-header").innerHTML = `
+    <button class="back-btn" onclick="show('shops'); window.scrollTo(0,0)">← Orqaga</button>
+    <div class="detail-name">${x(S.shop.name)}</div>
+    <div class="detail-addr">📍 ${x(S.shop.address)}</div>
+    <div class="detail-tags">
+      <span class="detail-tag">📞 ${x(S.shop.phone)}</span>
+      ${S.shop.has_delivery?'<span class="detail-tag">🚚 Yetkazib berish</span>':""}
+    </div>`;
+
+  const grid  = document.getElementById("products-grid");
+  const label = document.getElementById("prods-label");
+  grid.innerHTML = `<div class="state-box" style="grid-column:span 2"><div class="spinner"></div><div class="state-sub">Mahsulotlar yuklanmoqda...</div></div>`;
+
+  try {
+    const prods = await get(`/api/products?shop_id=${id}`);
+    S.products = prods;
+    label.textContent = prods.length + " ta mahsulot";
+    if (!prods.length) {
+      grid.innerHTML = `<div class="state-box" style="grid-column:span 2"><div class="state-emoji">🛍</div><div class="state-title">Mahsulot yo'q</div></div>`;
+      return;
+    }
+    grid.innerHTML = prods.map(p => prodCard(p)).join("");
+    prods.forEach(p => { if (p.photo_url) lazyImg(p); });
+  } catch {
+    grid.innerHTML = `<div class="state-box" style="grid-column:span 2"><div class="state-emoji">😔</div><div class="state-title">Yuklab bo'lmadi</div></div>`;
+  }
+}
+
+function prodCard(p) {
+  const f = p.product_type === "flower";
+  const icon = f ? "🌸" : "🍰";
+  const del  = f ? p.flower_delivery : p.sweet_delivery;
+  const prices = f ? `
+    <div class="price-line"><span class="price-lbl">Dona:</span><span class="price-val">${fp(p.single_price)}</span></div>
+    <div class="price-line"><span class="price-lbl">Buket:</span><span class="price-val ${p.bouquet_price>0?'':'faded'}">${fp(p.bouquet_price)}</span></div>
+  ` : `
+    <div class="price-line"><span class="price-lbl">Bo'lak:</span><span class="price-val">${fp(p.piece_price)}</span></div>
+    <div class="price-line"><span class="price-lbl">Butun:</span><span class="price-val ${p.full_price>0?'':'faded'}">${fp(p.full_price)}</span></div>
+  `;
+  return `<div class="product-card" onclick="openProduct(${p.id})">
+    <div class="product-img-wrap" id="iw-${p.id}">
+      <img id="img-${p.id}" src="" alt="" style="display:none">
+      <span class="prod-placeholder">${icon}</span>
+    </div>
+    <div class="product-card-body">
+      <div class="product-card-name">${x(p.name)}</div>
+      <div class="product-prices">${prices}</div>
+      ${del?'<div class="delivery-dot">Yetkazib berish</div>':""}
+    </div>
+  </div>`;
+}
+
+function lazyImg(p) {
+  const img = document.getElementById("img-" + p.id);
+  if (!img) return;
+  const realSrc = API_BASE + p.photo_url;
+  const tmp = new Image();
+  tmp.onload = () => {
+    img.src = realSrc;
+    img.style.display = "block";
+    img.classList.add("loaded");
+    const ph = img.nextElementSibling;
+    if (ph) ph.style.display = "none";
+  };
+  tmp.src = realSrc;
+}
+
+// ── BOTTOM SHEET ─────────────────────────────────
+function openProduct(pid) {
+  S.product = S.products.find(p => p.id === pid);
+  if (!S.product) return;
+  S.qty = 1;
+  const p = S.product;
+  const f = p.product_type === "flower";
+  S.orderType = f ? (p.single_price>0?"single":"bouquet") : (p.piece_price>0?"piece":"full");
+
+  // Sheet rasmi
+  const wrap = document.getElementById("sheet-img-wrap");
+  wrap.querySelectorAll("img").forEach(e=>e.remove());
+  document.getElementById("sheet-placeholder").textContent = f ? "🌸" : "🍰";
+  document.getElementById("sheet-placeholder").style.display = "flex";
+
+  if (p.photo_url) {
+    const img = document.createElement("img");
+    img.src = API_BASE + p.photo_url;
+    img.onload = () => { img.classList.add("loaded"); document.getElementById("sheet-placeholder").style.display="none"; };
+    wrap.appendChild(img);
+  }
+
+  drawSheet();
+  document.getElementById("overlay").classList.add("show");
+  document.getElementById("sheet").classList.add("show");
+  tg?.HapticFeedback?.impactOccurred("light");
+}
+
+function drawSheet() {
+  const p = S.product;
+  const f = p.product_type === "flower";
+  const unit  = getUnit();
+  const total = unit * S.qty;
+  const del   = f ? p.flower_delivery : p.sweet_delivery;
+
+  const opts = f ? `
+    <div class="options-row">
+      ${p.single_price>0?`<button class="opt-btn ${S.orderType==="single"?"sel":""}" onclick="selType('single')"><div class="opt-lbl">🌸 Dona</div><div class="opt-price">${fp(p.single_price)}</div></button>`:""}
+      ${p.bouquet_price>0?`<button class="opt-btn ${S.orderType==="bouquet"?"sel":""}" onclick="selType('bouquet')"><div class="opt-lbl">💐 Buket</div><div class="opt-price">${fp(p.bouquet_price)}</div></button>`:""}
+    </div>` : `
+    <div class="options-row">
+      ${p.piece_price>0?`<button class="opt-btn ${S.orderType==="piece"?"sel":""}" onclick="selType('piece')"><div class="opt-lbl">🍰 Bo'lak</div><div class="opt-price">${fp(p.piece_price)}</div></button>`:""}
+      ${p.full_price>0?`<button class="opt-btn ${S.orderType==="full"?"sel":""}" onclick="selType('full')"><div class="opt-lbl">🎂 Butun</div><div class="opt-price">${fp(p.full_price)}</div></button>`:""}
+    </div>`;
+
+  document.getElementById("sheet-content").innerHTML = `
+    <div class="sheet-name">${x(p.name)}</div>
+    <div class="sheet-shop">🏪 ${x(S.shop?.name||"")}</div>
+    ${del?'<div class="delivery-dot" style="margin-top:8px">Yetkazib berish mavjud</div>':""}
+    <div class="option-title">Tur tanlang</div>${opts}
+    <div class="option-title">Miqdor</div>
+    <div class="qty-row">
+      <button class="qty-btn" onclick="chQty(-1)">−</button>
+      <span class="qty-num" id="qn">${S.qty}</span>
+      <button class="qty-btn" onclick="chQty(1)">+</button>
+    </div>
+    <div class="total-card">
+      <span class="total-lbl">Jami to'lov</span>
+      <span class="total-sum" id="ts">${fp(total)}</span>
+    </div>
+    <button class="order-btn" id="obtn" onclick="sendOrder()">🛍 Buyurtma berish — ${fp(total)}</button>`;
+}
+
+function getUnit() {
+  const p = S.product;
+  return {single:p.single_price,bouquet:p.bouquet_price,piece:p.piece_price,full:p.full_price}[S.orderType]||0;
+}
+
+function selType(t) { S.orderType=t; drawSheet(); }
+
+function chQty(d) {
+  S.qty = Math.max(1, Math.min(50, S.qty+d));
+  const t = getUnit() * S.qty;
+  document.getElementById("qn").textContent  = S.qty;
+  document.getElementById("ts").textContent  = fp(t);
+  document.getElementById("obtn").textContent= `🛍 Buyurtma berish — ${fp(t)}`;
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function closeSheet() {
+  document.getElementById("overlay").classList.remove("show");
+  document.getElementById("sheet").classList.remove("show");
+}
+
+// ── ZAKAZ YUBORISH ────────────────────────────────
+function sendOrder() {
+  const p = S.product;
+  const labels = {single:"Dona",bouquet:"Buket",piece:"Bo'lak",full:"Butun"};
+  const data = {
+    shop_id:      S.shop.id,
+    shop_name:    S.shop.name,
+    product_id:   p.id,
+    product_name: p.name,
+    product_type: p.product_type,
+    order_type:   S.orderType,
+    type_label:   labels[S.orderType],
+    qty:          S.qty,
+    unit_price:   getUnit(),
+    total_price:  getUnit() * S.qty,
+    has_delivery: !!(p.product_type==="flower"?p.flower_delivery:p.sweet_delivery),
+  };
+  tg?.sendData?.(JSON.stringify(data));
+  closeSheet();
+  document.getElementById("success-text").innerHTML =
+    `<b>${x(S.shop.name)}</b> tez orada siz bilan bog'lanadi.<br><br>Jami: <b style="color:var(--pink)">${fp(data.total_price)}</b>`;
+  document.getElementById("successPopup").classList.add("show");
+  tg?.HapticFeedback?.notificationOccurred("success");
+  setTimeout(()=>{ document.getElementById("successPopup").classList.remove("show"); tg?.close?.(); }, 3000);
+}
+
+// ── UTILS ─────────────────────────────────────────
+function fp(n) {
+  if (!n||n===0) return "—";
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ") + " so'm";
+}
+function x(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+renderShops();
+</script>
+</body>
+</html>
