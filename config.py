@@ -20,7 +20,7 @@ DATABASE_PATH = "orzugul.db"
 WEBAPP_URL = "https://yourdomain.com/webapp/index.html"
 
 # ── Botlar USERNAME lari ─────────────────────────
-CUSTOMER_BOT_USERNAME = "@OrzugulBot"
+CUSTOMER_BOT_USERNAME = "@@orzugul_bot"
 SHOP_BOT_USERNAME     = "@OrzugulShopBot"
 
 # ── Mahsulot sozlamalari ─────────────────────────
