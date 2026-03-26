@@ -8,7 +8,7 @@ CUSTOMER_BOT_TOKEN = "8648436007:AAELNuhZcPqdv977Po3fB7sR41qJHQsx-q4"       # @O
 SHOP_BOT_TOKEN     = "8415013128:AAHJjjnjFyaGhMDSMo32TCa0u0kwvWtZ83M"        # @OrzugulShopBot tokeni
 
 # ── Admin Telegram ID lari ───────────────────────
-ADMIN_IDS = [123456789]   # O'zingizning Telegram ID ingiz
+ADMIN_IDS = [6551375195]   # O'zingizning Telegram ID ingiz
 
 # ── Ma'lumotlar bazasi ───────────────────────────
 DATABASE_PATH = "orzugul.db"
