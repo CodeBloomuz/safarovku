@@ -1,30 +1,28 @@
 # ════════════════════════════════════════════════
-#  ORZUGUL — Konfiguratsiya
-#  Bu faylni o'zingizning tokenlaringiz bilan to'ldiring
+# ORZUGUL — Konfiguratsiya
 # ════════════════════════════════════════════════
 
 # ── Bot tokenlar (@BotFather dan oling) ─────────
-CUSTOMER_BOT_TOKEN = "8648436007:AAELNuhZcPqdv977Po3fB7sR41qJHQsx-q4"       # @OrzugulBot tokeni
-SHOP_BOT_TOKEN     = "8415013128:AAHJjjnjFyaGhMDSMo32TCa0u0kwvWtZ83M"        # @OrzugulShopBot tokeni
+CUSTOMER_BOT_TOKEN = "8648436007:AAELNuhZcPqdv977Po3fB7sR41qJHQsx-q4"   # @OrzugulBot
+SHOP_BOT_TOKEN     = "8415013128:AAHJjjnjFyaGhMDSMo32TCa0u0kwvWtZ83M"   # @OrzugulShopBot
+ADMIN_BOT_TOKEN    = "8693071773:AAGzyOvTmLVQc5Jbd6bxnQEpGH5ysv3rVz8"   # @OrzugulAdminBot
 
 # ── Admin Telegram ID lari ───────────────────────
-ADMIN_IDS = [6551375195]   # O'zingizning Telegram ID ingiz
+ADMIN_IDS = [6551375195]
 
 # ── Ma'lumotlar bazasi ───────────────────────────
 DATABASE_PATH = "orzugul.db"
 
 # ── Telegram Mini App URL ────────────────────────
-# Mini App ni hosting ga joylashtirgandan keyin URL ni qo'ying
-# Masalan: https://yourdomain.com/orzugul/webapp/index.html
-# Yoki GitHub Pages: https://username.github.io/orzugul/
 WEBAPP_URL = "https://yourdomain.com/webapp/index.html"
 
 # ── Botlar USERNAME lari ─────────────────────────
-CUSTOMER_BOT_USERNAME = "@@orzugul_bot"
+CUSTOMER_BOT_USERNAME = "@OrzugulBot"
 SHOP_BOT_USERNAME     = "@OrzugulShopBot"
+ADMIN_BOT_USERNAME    = "@OrzugulAdminBot"
 
 # ── Mahsulot sozlamalari ─────────────────────────
-MIN_PRODUCTS = 5          # Do'kon uchun minimal mahsulot soni
+MIN_PRODUCTS = 5
 
 # ── Xabar matnlari ──────────────────────────────
 WELCOME_CUSTOMER = """
@@ -40,7 +38,7 @@ WELCOME_SHOP = """
 
 Bu bot orqali siz:
 ✅ Do'koningizni ro'yxatdan o'tkaza olasiz
-✅ Mahsulotlaringizni qo'sha olasiz  
+✅ Mahsulotlaringizni qo'sha olasiz
 ✅ Kelgan zakazlarni ko'ra olasiz
 
 Boshlash uchun /start ni bosing
