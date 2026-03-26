@@ -4,8 +4,8 @@
 # ════════════════════════════════════════════════
 
 # ── Bot tokenlar (@BotFather dan oling) ─────────
-CUSTOMER_BOT_TOKEN = "TOKEN_MIJOZ_BOTI"       # @OrzugulBot tokeni
-SHOP_BOT_TOKEN     = "TOKEN_DOKON_BOTI"        # @OrzugulShopBot tokeni
+CUSTOMER_BOT_TOKEN = "8648436007:AAELNuhZcPqdv977Po3fB7sR41qJHQsx-q4"       # @OrzugulBot tokeni
+SHOP_BOT_TOKEN     = "8415013128:AAHJjjnjFyaGhMDSMo32TCa0u0kwvWtZ83M"        # @OrzugulShopBot tokeni
 
 # ── Admin Telegram ID lari ───────────────────────
 ADMIN_IDS = [123456789]   # O'zingizning Telegram ID ingiz
